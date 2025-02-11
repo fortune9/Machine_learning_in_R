@@ -1,0 +1,81 @@
+---
+title: "Untitled"
+output:
+  github_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Prerequisites
+
+Install the following packages
+
+- dplyr
+- ggplot2
+- rsample
+- modeldata
+- caret
+- h2o
+- AmesHousing
+
+
+## Initiate the H2O environment
+
+```{r}
+# Helper packages
+library(dplyr)     # for data manipulation
+library(ggplot2)   # for awesome graphics
+
+# Modeling process packages
+library(rsample)   # for resampling procedures
+library(caret)     # for resampling and model training
+library(h2o)       # for resampling and model training
+
+# h2o set-up 
+h2o.no_progress()  # turn off h2o progress bars
+h2o.init()         # launch h2o
+```
+
+
+What if you got the following error:
+
+```
+<simpleError in system2(command, "-version", stdout = TRUE, stderr = TRUE): '-version' not found>
+Error in value[[3L]](cond) : 
+  You have a 32-bit version of Java. H2O works best with 64-bit Java.
+Please download the latest Java SE JDK from the following URL:
+https://www.oracle.com/technetwork/java/javase/downloads/index.html
+```
+
+This error suggests that h2o initiation could not find the needed Java,
+which can be caused by:
+
+- no java was installed on the system
+- 32-bit, instead of 64-bit Java was installed
+- the environment variable *JAVA_HOME* was not set
+
+Therefore, one needs to install the 64-bit Java or JDK, and then set environment
+variable *JAVA_HOME* to the installation folder, such as 
+*c:/Program Files/Java/jdk-23*, and then restart R and reinstall the package
+*h2o*, and this should solve the problem. For more on the package, check this
+link https://docs.h2o.ai/h2o/latest-stable/h2o-docs/faq/r.html.
+
+
+## Load data
+
+```{r}
+# Ames housing data
+ames <- AmesHousing::make_ames()
+ames.h2o <- as.h2o(ames)
+
+# Job attrition data
+churn <- modeldata::attrition %>% 
+  mutate_if(is.ordered, .funs = factor, ordered = FALSE)
+churn.h2o <- as.h2o(churn)
+```
+
+
+
